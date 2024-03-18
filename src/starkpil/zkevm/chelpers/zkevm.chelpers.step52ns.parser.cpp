@@ -4,7 +4,7 @@
 #include "constant_pols_starks.hpp"
 #include "zkevmSteps.hpp"
 #include "zkevm.chelpers.step52ns.parser.hpp"
-#include <immintrin.h>
+#include "simd.hpp"
 
 void ZkevmSteps::step52ns_parser_first_avx(StepsParams &params, uint64_t nrows, uint64_t nrowsBatch)
 {
@@ -12,9 +12,9 @@ void ZkevmSteps::step52ns_parser_first_avx(StepsParams &params, uint64_t nrows, 
 #pragma omp parallel for
      for (uint64_t i = 0; i < nrows; i += nrowsBatch)
      {
-          __m256i tmp0_0, tmp0_1, tmp0_2;
-          __m256i tmp1_0, tmp1_1, tmp1_2;
-          __m256i tmp2_0, tmp2_1, tmp2_2;
+          u64x4 tmp0_0, tmp0_1, tmp0_2;
+          u64x4 tmp1_0, tmp1_1, tmp1_2;
+          u64x4 tmp2_0, tmp2_1, tmp2_2;
 
           tmp2_0 = _mm256_setzero_si256();
           tmp2_1 = _mm256_setzero_si256();
@@ -36,10 +36,10 @@ void ZkevmSteps::step52ns_parser_first_avx(StepsParams &params, uint64_t nrows, 
 
           Goldilocks::Element aux0_ops[4], aux1_ops[4], aux2_ops[4];
           Goldilocks::Element aux0[4], aux1[4], aux2[4];
-          __m256i chall50_, chall51_, chall52_;
-          __m256i chall5o0_, chall5o1_, chall5o2_;
-          __m256i chall60_, chall61_, chall62_;
-          __m256i chall6o0_, chall6o1_, chall6o2_;
+          u64x4 chall50_, chall51_, chall52_;
+          u64x4 chall5o0_, chall5o1_, chall5o2_;
+          u64x4 chall60_, chall61_, chall62_;
+          u64x4 chall6o0_, chall6o1_, chall6o2_;
 
           for (int k = 0; k < AVX_SIZE_; ++k)
           {

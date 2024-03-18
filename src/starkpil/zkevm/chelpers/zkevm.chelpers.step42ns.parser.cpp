@@ -4,7 +4,7 @@
 #include "constant_pols_starks.hpp"
 #include "zkevmSteps.hpp"
 #include "zkevm.chelpers.step42ns.parser.hpp"
-#include <immintrin.h>
+#include "simd.hpp"
 
 #define AVX_SIZE_ 4
 
@@ -14,9 +14,9 @@ void ZkevmSteps::step42ns_parser_first_avx(StepsParams &params, uint64_t nrows, 
      for (uint64_t i = 0; i < nrows; i += nrowsBatch)
      {
           int i_args = 0;
-          //__m256i *tmp1 = new __m256i[NTEMP1_];
+          //u64x4 *tmp1 = new u64x4[NTEMP1_];
           // Goldilocks3::Element_avx *tmp3 = new Goldilocks3::Element_avx[NTEMP3_];
-          __m256i tmp1[NTEMP1_];
+          u64x4 tmp1[NTEMP1_];
           Goldilocks3::Element_avx tmp3[NTEMP3_];
           uint64_t offsets1[4], offsets2[4];
           uint64_t numpols = params.pConstPols2ns->numPols();
@@ -1440,39 +1440,39 @@ void ZkevmSteps::step42ns_parser_first(StepsParams &params, uint64_t nrows, uint
 void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nrows, uint64_t nrowsBatch)
 {
 
-     void (*jumpTable[])(int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols) = {
+     void (*jumpTable[])(int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols) = {
 
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 0
               Goldilocks::add_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], tmp1[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 1
               Goldilocks::add_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 2
               Goldilocks::add_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], Goldilocks::fromU64(args42[i_args + 2]));
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 3
               Goldilocks::add_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pConstPols2ns->getElement(args42[i_args + 2], i), numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 4
               Goldilocks::add_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pols[args42[i_args + 3] + i * args42[i_args + 4]], args42[i_args + 2], args42[i_args + 4]);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 5
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1483,25 +1483,25 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::add_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 9;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 6
               Goldilocks::add_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pConstPols2ns->getElement(args42[i_args + 3], i), args42[i_args + 2], numpols);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 7
               Goldilocks::add_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], Goldilocks::fromU64(args42[i_args + 3]), args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 8
               Goldilocks::add_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(args42[i_args + 1], i), &params.pConstPols2ns->getElement(args42[i_args + 2], i), numpols, numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 9
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1512,13 +1512,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::add_avx(tmp1[args42[i_args]], &params.pConstPols2ns->getElement(0, 0), &params.pConstPols2ns->getElement(0, 0), offsets1, offsets2);
               i_args += 7;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 10
               Goldilocks::add_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(args42[i_args + 1], i), Goldilocks::fromU64(args42[i_args + 2]), numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 11
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1528,73 +1528,73 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::add_avx(tmp1[args42[i_args]], &params.pConstPols2ns->getElement(0, 0), Goldilocks::fromU64(args42[i_args + 4]), offsets1);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 12
               Goldilocks3::add13_avx(tmp3[args42[i_args]], tmp1[args42[i_args + 1]], tmp3[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 13
               Goldilocks3::add1c3c_avx(tmp3[args42[i_args]], Goldilocks::fromU64(args42[i_args + 1]), params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 14
               Goldilocks3::add13c_avx(tmp3[args42[i_args]], tmp1[args42[i_args + 1]], params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 15
               Goldilocks3::add13_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp3[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 16
               Goldilocks3::add13c_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], params.challenges[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 17
               Goldilocks3::add_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], tmp3[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 18
               Goldilocks3::add33c_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 19
               Goldilocks3::add_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp3[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 20
               Goldilocks3::add33c_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], params.challenges[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 21
               Goldilocks::sub_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], tmp1[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 22
               Goldilocks::sub_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 23
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1604,13 +1604,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], tmp1[args42[i_args + 1]], &params.pols[0], offsets2);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 24
               Goldilocks::sub_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp1[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 25
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1620,25 +1620,25 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], &params.pols[0], tmp1[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 26
               Goldilocks::sub_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], Goldilocks::fromU64(args42[i_args + 2]));
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 27
               Goldilocks::sub_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]), tmp1[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 28
               Goldilocks::sub_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], Goldilocks::fromU64(args42[i_args + 3]), args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 29
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1648,13 +1648,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], &params.pols[0], Goldilocks::fromU64(args42[i_args + 5]), offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 30
               Goldilocks::sub_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]), &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 31
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1664,13 +1664,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], Goldilocks::fromU64(args42[i_args + 1]), &params.pols[0], offsets2);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 32
               Goldilocks::sub_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]), &params.pConstPols2ns->getElement(args42[i_args + 2], i), numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 33
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1680,13 +1680,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], Goldilocks::fromU64(args42[i_args + 1]), &params.pConstPols2ns->getElement(0, 0), offsets2);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 34
               Goldilocks::sub_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], params.publicInputs[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 35
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1697,7 +1697,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 7;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 36
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1708,13 +1708,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 7;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 37
               Goldilocks::sub_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pols[args42[i_args + 3] + i * args42[i_args + 4]], args42[i_args + 2], args42[i_args + 4]);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 38
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1725,61 +1725,61 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::sub_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 9;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 39
               Goldilocks::sub_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(args42[i_args + 1], i), &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], numpols, args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 40
               Goldilocks::sub_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pConstPols2ns->getElement(args42[i_args + 2], i), numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 41
               Goldilocks3::sub31c_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], Goldilocks::fromU64(args42[i_args + 3]), args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 42
               Goldilocks3::sub_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], tmp3[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 43
               Goldilocks3::sub33c_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 44
               Goldilocks3::sub_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 45
               Goldilocks::mult_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], tmp1[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 46
               Goldilocks::mul_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]), tmp1[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 47
               Goldilocks::mul_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp1[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 48
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1789,19 +1789,19 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], &params.pols[0], tmp1[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 49
               Goldilocks::mul_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pConstPols2ns->getElement(args42[i_args + 2], i), numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 50
               Goldilocks::mul_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pols[args42[i_args + 3] + i * args42[i_args + 4]], args42[i_args + 2], args42[i_args + 4]);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 51
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1812,7 +1812,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 7;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 52
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1823,19 +1823,19 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 9;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 53
               Goldilocks::mul_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]), &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 54
               Goldilocks::mul_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pConstPols2ns->getElement(args42[i_args + 3], i), args42[i_args + 2], numpols);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 55
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1846,13 +1846,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], &params.pols[0], &params.pConstPols2ns->getElement(0, 0), offsets1, offsets2);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 56
               Goldilocks::mul_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]], &params.pols[args42[i_args + 2] + i * args42[i_args + 3]], args42[i_args + 3]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 57
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1862,37 +1862,37 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], tmp1[args42[i_args + 1]], &params.pols[0], offsets2);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 58
               Goldilocks::mul_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(args42[i_args + 1], i), tmp1[args42[i_args + 2]], numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 59
               Goldilocks3::mul13c_avx(tmp3[args42[i_args]], tmp1[args42[i_args + 1]], params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 60
               Goldilocks3::mul13_avx(tmp3[args42[i_args]], &params.pConstPols2ns->getElement(args42[i_args + 1], i), tmp3[args42[i_args + 2]], numpols);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 61
               Goldilocks3::mul13_avx(tmp3[args42[i_args]], tmp1[args42[i_args + 1]], tmp3[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 62
               Goldilocks3::mul13c_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], params.challenges[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 63
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1902,13 +1902,13 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul13c_avx(tmp3[args42[i_args]], &params.pols[0], params.challenges[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 64
               Goldilocks3::mul13_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp3[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 65
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1919,25 +1919,25 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul13_avx(tmp3[args42[i_args]], &params.pols[0], tmp3[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 66
               Goldilocks3::mul1c3c_avx(tmp3[args42[i_args]], Goldilocks::fromU64(args42[i_args + 1]), (Goldilocks3::Element &)*params.challenges[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 67
               Goldilocks3::mul13c_avx(tmp3[args42[i_args]], params.x_2ns[i], (Goldilocks3::Element &)*params.challenges[args42[i_args + 1]], params.x_2ns.offset());
               i_args += 2;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 68
               Goldilocks3::mul13_avx(tmp3[args42[i_args]], params.x_2ns[i], tmp3[args42[i_args + 1]], params.x_2ns.offset());
               i_args += 2;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 69
               Goldilocks::Element tmp_inv[3];
@@ -1959,25 +1959,25 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               }
               i_args += 1;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 70
               Goldilocks3::mul33c_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 2]], params.challenges[args42[i_args + 1]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 71
               Goldilocks3::mul_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 1]], tmp3[args42[i_args + 2]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 72
               Goldilocks3::mul_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pols[args42[i_args + 3] + i * args42[i_args + 4]], args42[i_args + 2], args42[i_args + 4]);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 73
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1988,7 +1988,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul33c_avx(tmp3[args42[i_args]], &params.pols[0], params.challenges[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 74
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -1999,19 +1999,19 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul_avx(tmp3[args42[i_args]], &params.pols[0], tmp3[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 75
               Goldilocks3::mul_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], tmp3[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 76
               Goldilocks3::mul33c_avx(tmp3[args42[i_args]], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], params.challenges[args42[i_args + 3]], args42[i_args + 2]);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 77
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -2022,19 +2022,19 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul_avx(tmp3[args42[i_args]], &params.pols[0], &params.pols[0], offsets1, offsets2);
               i_args += 7;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 78
               Goldilocks::copy_avx(tmp1[(args42[i_args])], tmp1[args42[i_args + 1]]);
               i_args += 2;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 79
               Goldilocks::copy_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], args42[i_args + 2]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 80
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -2044,19 +2044,19 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::copy_avx(tmp1[args42[i_args]], &params.pols[0], offsets1);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 81
               Goldilocks::copy_avx(tmp1[(args42[i_args])], Goldilocks::fromU64(args42[i_args + 1]));
               i_args += 2;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 82
               Goldilocks::copy_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(args42[i_args + 1], i), numpols);
               i_args += 2;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 83
               for (uint64_t j = 0; j < AVX_SIZE_; ++j)
@@ -2066,7 +2066,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::copy_avx(tmp1[(args42[i_args])], &params.pConstPols2ns->getElement(0, 0), offsets1);
               i_args += 4;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 84
               // 12 - 70: 1918
@@ -2075,7 +2075,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul33c_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 2]], params.challenges[args42[i_args + 1]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 85
               // 0 - 50: 1462
@@ -2084,7 +2084,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[(args42[i_args])], &params.pols[args42[i_args + 1] + i * args42[i_args + 2]], &params.pols[args42[i_args + 3] + i * args42[i_args + 4]], args42[i_args + 2], args42[i_args + 4]);
               i_args += 5;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 86
               //  32, 47, 21, 32, 48: 166
@@ -2103,7 +2103,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks::mul_avx(tmp1[args42[i_args]], &params.pols[0], tmp1[args42[i_args + 5]], offsets1);
               i_args += 6;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 87
               //  84, 84, 84, 84,
@@ -2124,7 +2124,7 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
               Goldilocks3::mul33c_avx(tmp3[args42[i_args]], tmp3[args42[i_args + 2]], params.challenges[args42[i_args + 1]]);
               i_args += 3;
          },
-         [](int i, int &i_args, __m256i tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
+         [](int i, int &i_args, u64x4 tmp1[NTEMP1_], Goldilocks3::Element_avx tmp3[NTEMP3_], uint64_t offsets1[4], uint64_t offsets2[4], StepsParams &params, const int numpols)
          {
               // 88
               //  21, 50, 21, 53, 0, 85, 50, 85, 21, 50,
@@ -2160,9 +2160,9 @@ void ZkevmSteps::step42ns_parser_first_avx_jump(StepsParams &params, uint64_t nr
      for (uint64_t i = 0; i < nrows; i += nrowsBatch)
      {
           int i_args = 0;
-          //__m256i *tmp1 = new __m256i[NTEMP1_];
+          //u64x4 *tmp1 = new u64x4[NTEMP1_];
           // Goldilocks3::Element_avx *tmp3 = new Goldilocks3::Element_avx[NTEMP3_];
-          __m256i tmp1[NTEMP1_];
+          u64x4 tmp1[NTEMP1_];
           Goldilocks3::Element_avx tmp3[NTEMP3_];
           uint64_t offsets1[4], offsets2[4];
           uint64_t numpols = params.pConstPols2ns->numPols();
