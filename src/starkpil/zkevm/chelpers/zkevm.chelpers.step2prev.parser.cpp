@@ -4,7 +4,7 @@
 #include "constant_pols_starks.hpp"
 #include "zkevmSteps.hpp"
 #include "zkevm.chelpers.step2prev.parser.hpp"
-#include <immintrin.h>
+#include "simd.hpp"
 
 void ZkevmSteps::step2prev_parser_first_avx(StepsParams &params, uint64_t nrows, uint64_t nrowsBatch)
 {
@@ -12,9 +12,9 @@ void ZkevmSteps::step2prev_parser_first_avx(StepsParams &params, uint64_t nrows,
      for (uint64_t i = 0; i < nrows; i += nrowsBatch)
      {
           int i_args = 0;
-          //__m256i *tmp1 = new __m256i[NTEMP1_];
+          //u64x4 *tmp1 = new u64x4[NTEMP1_];
           // Goldilocks3::Element_avx *tmp3 = new Goldilocks3::Element_avx[NTEMP3_];
-          __m256i tmp1[NTEMP1_];
+          u64x4 tmp1[NTEMP1_];
           Goldilocks3::Element_avx tmp3[NTEMP3_];
           uint64_t offsets1[4], offsets2[4];
           uint64_t numpols = params.pConstPols->numPols();
@@ -929,7 +929,7 @@ void ZkevmSteps::step2prev_parser_first_avx512(StepsParams &params, uint64_t nro
      for (uint64_t i = 0; i < nrows; i += nrowsBatch)
      {
           int i_args = 0;
-          //__m256i *tmp1 = new __m256i[NTEMP1_];
+          //u64x4 *tmp1 = new u64x4[NTEMP1_];
           // Goldilocks3::Element_avx *tmp3 = new Goldilocks3::Element_avx[NTEMP3_];
           __m512i tmp1[NTEMP1_];
           Goldilocks3::Element_avx512 tmp3[NTEMP3_];
