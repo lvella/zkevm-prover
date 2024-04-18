@@ -18,7 +18,7 @@ CXX := g++
 AS := nasm
 CXXFLAGS := -std=c++17 $(GRPCPP_FLAGS) #-Wfatal-errors
 LDFLAGS := -lprotobuf -lsodium -lgpr -lpthread -lpqxx -lpq -lgmp -lstdc++ -lgmpxx -lsecp256k1 -lcrypto -luuid $(GRPCPP_LIBS)
-CFLAGS := -fopenmp -Wall -pthread -Wno-unused-label -fopenmp -mavx2 -MD
+CFLAGS := -fopenmp -Wall -pthread -Wno-unused-label -fopenmp -MD
 ASFLAGS := -felf64
 
 # Debug build flags
@@ -69,13 +69,13 @@ DEPS_BCT := $(OBJS_BCT:.o=.d)
 
 LDFLAGS_TEST := -rdynamic -lgmp -luuid -lcrypto -ldl -lpqxx
 OBJS_TEST := ./build/./test/examples/main.cpp.o ./build/./src/goldilocks/src/ntt_goldilocks.cpp.o ./build/./src/goldilocks/src/poseidon_goldilocks.cpp.o ./build/./src/goldilocks/src/goldilocks_cubic_extension.cpp.o ./build/./src/goldilocks/src/goldilocks_base_field.cpp.o ./build/./src/starkpil/stark_info.cpp.o ./build/./src/starkpil/starks.cpp.o ./build/./src/starkpil/chelpers.cpp.o ./build/./src/rapidsnark/binfile_utils.cpp.o ./build/./src/starkpil/merkleTree/merkleTreeGL.cpp.o ./build/./src/starkpil/transcript/transcript.cpp.o ./build/./src/starkpil/fri/friProve.cpp.o ./build/./src/starkpil/fri/proof2zkinStark.cpp.o ./build/./src/ffiasm/fnec.asm.o ./build/./src/ffiasm/fq.asm.o ./build/./src/ffiasm/fq.cpp.o ./build/./src/ffiasm/splitparstr.cpp.o ./build/./src/ffiasm/fec.asm.o ./build/./src/ffiasm/fnec.cpp.o ./build/./src/ffiasm/fr.asm.o ./build/./src/ffiasm/fec.cpp.o ./build/./src/ffiasm/fr.cpp.o ./build/./src/utils/exit_process.cpp.o ./build/./src/utils/timer.cpp.o ./build/./src/utils/zklog.cpp.o ./build/./src/utils/utils.cpp.o
-DEPS_TEST := $(OBJS_TEST:.o=.d) ./build/dynamic_chelpers.d
+DEPS_TEST := $(OBJS_TEST:.o=.d)
 
 all: $(BUILD_DIR)/$(TARGET_ZKP)
 
 bctree: $(BUILD_DIR)/$(TARGET_BCT)
 
-test: $(BUILD_DIR)/$(TARGET_TEST) $(BUILD_DIR)/dynamic_chelpers.so
+test: $(BUILD_DIR)/$(TARGET_TEST)
 
 .PHONY: all bctree test
 
